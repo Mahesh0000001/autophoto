@@ -411,6 +411,11 @@
     #downloadManualButton:disabled { background: transparent; border-color: var(--accent-primary); color: var(--accent-primary); opacity: 0.5; box-shadow: none; }
     #downloadContactSheetButton:disabled { background: transparent; border-color: var(--accent-tertiary); color: var(--accent-tertiary); opacity: 0.5; box-shadow: none; }
 
+    /* Save to Gallery (new feature, does not replace zip download) */
+    #galleryAllButton, #galleryAllAutomaticButton, #galleryManualButton, #galleryContactSheetButton { background: transparent; border: 1px solid var(--accent-primary); color: var(--accent-primary); padding: calc(0.75rem - 1px) calc(1.5rem - 1px); box-shadow: none; }
+    #galleryAllButton:hover:enabled, #galleryAllAutomaticButton:hover:enabled, #galleryManualButton:hover:enabled, #galleryContactSheetButton:hover:enabled { background-color: rgba(0, 198, 255, 0.1); border-color: var(--accent-primary-dark); color: var(--accent-primary-dark); }
+    #galleryAllButton:disabled, #galleryAllAutomaticButton:disabled, #galleryManualButton:disabled, #galleryContactSheetButton:disabled { background: transparent; border-color: var(--accent-primary); color: var(--accent-primary); opacity: 0.5; box-shadow: none; }
+
     .action-icon-button {
         border-radius: var(--border-radius-md);
         cursor: pointer;
@@ -1051,6 +1056,9 @@
     .action-button-row .action-button {
         flex: 1;
     }
+    .action-button-row.gallery-row {
+        margin-top: 0.5rem;
+    }
 
     .secondary-button {
         background: transparent;
@@ -1574,6 +1582,9 @@
     #downloadSelectedAutomaticBtn:hover:enabled { background-color: rgba(45,212,191,0.1); border-color: var(--accent-secondary-dark); color: var(--accent-secondary-dark); }
     #downloadSelectedManualBtn { border-color: var(--accent-primary); color: var(--accent-primary); }
     #downloadSelectedManualBtn:hover:enabled { background-color: rgba(0,198,255,0.1); border-color: var(--accent-primary-dark); color: var(--accent-primary-dark); }
+    #gallerySelectedIntervalBtn, #gallerySelectedAutomaticBtn, #gallerySelectedManualBtn { border-color: var(--accent-primary); color: var(--accent-primary); }
+    #gallerySelectedIntervalBtn:hover:enabled, #gallerySelectedAutomaticBtn:hover:enabled, #gallerySelectedManualBtn:hover:enabled { background-color: rgba(0,198,255,0.1); border-color: var(--accent-primary-dark); color: var(--accent-primary-dark); }
+    .gallery-selected-btn { background: transparent !important; border: 1px solid; box-shadow: none; padding: calc(0.75rem - 1px) calc(1.5rem - 1px); }
     .cancel-selection-btn {
         background: var(--bg-tertiary) !important;
         border: 1px solid var(--border-color) !important;
@@ -2068,6 +2079,10 @@
                     <button id="cancelSelectionIntervalBtn" class="action-button cancel-selection-btn" style="display:none;">Cancel</button>
                     <button id="downloadSelectedIntervalBtn" class="action-button download-selected-btn" style="display:none;">Download Selected <i class="ri-download-2-line"></i></button>
                 </div>
+                <div class="action-button-row gallery-row">
+                    <button id="galleryAllButton" class="action-button secondary-button" disabled>Save to Gallery <i class="ri-image-add-line"></i></button>
+                    <button id="gallerySelectedIntervalBtn" class="action-button gallery-selected-btn" style="display:none;">Save Selected to Gallery <i class="ri-image-add-line"></i></button>
+                </div>
             </div>
 
             <div class="button-group" id="automaticModeButtons" style="display:none;">
@@ -2077,6 +2092,10 @@
                     <button id="namingSettingsButtonAutomatic" class="action-icon-button" title="Filename Settings" disabled><i class="ri-settings-3-line"></i></button>
                     <button id="cancelSelectionAutomaticBtn" class="action-button cancel-selection-btn" style="display:none;">Cancel</button>
                     <button id="downloadSelectedAutomaticBtn" class="action-button download-selected-btn" style="display:none;">Download Selected <i class="ri-download-2-line"></i></button>
+                </div>
+                <div class="action-button-row gallery-row">
+                    <button id="galleryAllAutomaticButton" class="action-button secondary-button" disabled>Save to Gallery <i class="ri-image-add-line"></i></button>
+                    <button id="gallerySelectedAutomaticBtn" class="action-button gallery-selected-btn" style="display:none;">Save Selected to Gallery <i class="ri-image-add-line"></i></button>
                 </div>
             </div>
 
@@ -2089,6 +2108,10 @@
                     <button id="cancelSelectionManualBtn" class="action-button cancel-selection-btn" style="display:none;">Cancel</button>
                     <button id="downloadSelectedManualBtn" class="action-button download-selected-btn" style="display:none;">Download Selected <i class="ri-download-2-line"></i></button>
                 </div>
+                <div class="action-button-row gallery-row">
+                    <button id="galleryManualButton" class="action-button secondary-button" disabled>Save to Gallery <i class="ri-image-add-line"></i></button>
+                    <button id="gallerySelectedManualBtn" class="action-button gallery-selected-btn" style="display:none;">Save Selected to Gallery <i class="ri-image-add-line"></i></button>
+                </div>
             </div>
 
             <div class="button-group" id="contactSheetModeButtons" style="display:none;">
@@ -2096,6 +2119,9 @@
                 <div class="action-button-row">
                     <button id="previewContactSheetButton" class="action-button secondary-button" disabled>Preview <i class="ri-image-line"></i></button>
                     <button id="downloadContactSheetButton" class="action-button secondary-button" disabled>Download <i class="ri-download-2-line"></i></button>
+                </div>
+                <div class="action-button-row gallery-row">
+                    <button id="galleryContactSheetButton" class="action-button secondary-button" disabled>Save to Gallery <i class="ri-image-add-line"></i></button>
                 </div>
             </div>
 
@@ -3264,6 +3290,13 @@
             if(downloadAllButton) downloadAllButton.disabled = !hasAnyScreenshots || processingActive;
             if(downloadAllAutomaticButton) downloadAllAutomaticButton.disabled = !hasAnyScreenshots || processingActive;
             if(downloadManualButton) downloadManualButton.disabled = !hasAnyScreenshots || processingActive;
+            // Save to Gallery buttons (new feature) mirror the Download All buttons' enabled state
+            const galleryAllBtnRef = $('galleryAllButton');
+            const galleryAllAutoBtnRef = $('galleryAllAutomaticButton');
+            const galleryManualBtnRef = $('galleryManualButton');
+            if(galleryAllBtnRef) galleryAllBtnRef.disabled = !hasAnyScreenshots || processingActive;
+            if(galleryAllAutoBtnRef) galleryAllAutoBtnRef.disabled = !hasAnyScreenshots || processingActive;
+            if(galleryManualBtnRef) galleryManualBtnRef.disabled = !hasAnyScreenshots || processingActive;
             if(namingSettingsButton) namingSettingsButton.disabled = !hasAutoOrAutomaticScreenshots && !hasManualScreenshots || processingActive;
             if(namingSettingsButtonAutomatic) namingSettingsButtonAutomatic.disabled = !hasAutoOrAutomaticScreenshots && !hasManualScreenshots || processingActive;
             if(namingSettingsButtonManual) namingSettingsButtonManual.disabled = !hasAutoOrAutomaticScreenshots && !hasManualScreenshots || processingActive;
@@ -3271,6 +3304,8 @@
             const needsUpdate = processContactSheetButton?.classList.contains('needs-update');
             if(downloadContactSheetButton) downloadContactSheetButton.disabled = !contactSheetBlob || processingActive || needsUpdate;
             if(previewContactSheetButton) previewContactSheetButton.disabled = !contactSheetBlob || processingActive || needsUpdate;
+            const galleryContactSheetBtnRef = $('galleryContactSheetButton');
+            if(galleryContactSheetBtnRef) galleryContactSheetBtnRef.disabled = !contactSheetBlob || processingActive || needsUpdate;
             if(clearScreenshotsButton) clearScreenshotsButton.disabled = !hasAutoOrAutomaticScreenshots && !hasManualScreenshots && !hasContactSheetPreview && !contactSheetBlob;
         };
         const updateDropZoneUI = (isFileLoaded, filename) => {
@@ -3376,7 +3411,7 @@
         const setProcessingUI = (mode) => {
             processingActive = true; cancelExtractionRequested = false;
             if (selectionModeActive) exitSelectionMode();
-            [processButton, processAutomaticButton, processContactSheetButton, downloadAllButton, downloadAllAutomaticButton, downloadManualButton, downloadContactSheetButton, previewContactSheetButton, addManualButton, extractManualButton, clearScreenshotsButton, namingSettingsButton, namingSettingsButtonAutomatic, namingSettingsButtonManual].forEach(btn => {
+            [processButton, processAutomaticButton, processContactSheetButton, downloadAllButton, downloadAllAutomaticButton, downloadManualButton, downloadContactSheetButton, previewContactSheetButton, addManualButton, extractManualButton, clearScreenshotsButton, namingSettingsButton, namingSettingsButtonAutomatic, namingSettingsButtonManual, $('galleryAllButton'), $('galleryAllAutomaticButton'), $('galleryManualButton'), $('galleryContactSheetButton')].forEach(btn => {
                 if (btn) btn.disabled = true;
             });
 
@@ -3454,9 +3489,9 @@
 
         // Frame selection
         const selectionButtonSets = () => [
-            { normal: [downloadAllButton, namingSettingsButton], sel: [$('cancelSelectionIntervalBtn'), $('downloadSelectedIntervalBtn')] },
-            { normal: [downloadAllAutomaticButton, namingSettingsButtonAutomatic], sel: [$('cancelSelectionAutomaticBtn'), $('downloadSelectedAutomaticBtn')] },
-            { normal: [extractManualButton, downloadManualButton, namingSettingsButtonManual], sel: [$('cancelSelectionManualBtn'), $('downloadSelectedManualBtn')] },
+            { normal: [downloadAllButton, namingSettingsButton, $('galleryAllButton')], sel: [$('cancelSelectionIntervalBtn'), $('downloadSelectedIntervalBtn'), $('gallerySelectedIntervalBtn')] },
+            { normal: [downloadAllAutomaticButton, namingSettingsButtonAutomatic, $('galleryAllAutomaticButton')], sel: [$('cancelSelectionAutomaticBtn'), $('downloadSelectedAutomaticBtn'), $('gallerySelectedAutomaticBtn')] },
+            { normal: [extractManualButton, downloadManualButton, namingSettingsButtonManual, $('galleryManualButton')], sel: [$('cancelSelectionManualBtn'), $('downloadSelectedManualBtn'), $('gallerySelectedManualBtn')] },
         ];
 
         const updateSelectionButtons = () => {
@@ -3467,6 +3502,9 @@
             });
             $$('.download-selected-btn').forEach(btn => {
                 btn.innerHTML = `Download Selected (${count}) <i class="ri-download-2-line"></i>`;
+            });
+            $$('.gallery-selected-btn').forEach(btn => {
+                btn.innerHTML = `Save Selected to Gallery (${count}) <i class="ri-image-add-line"></i>`;
             });
             if (clearScreenshotsButton) {
                 clearScreenshotsButton.innerHTML = `${DELETE_ICON_SVG}${selectionModeActive ? 'Clear Selected' : 'Clear Images'}`;
@@ -3667,73 +3705,102 @@
             });
             container.appendChild(downloadBtn);
 
-            // Android-only: Save to Gallery option
-            // Desktop ZIP/download behavior remains completely unchanged.
-            if (/Android/i.test(navigator.userAgent || '')) {
-                const saveGalleryBtn = document.createElement('button');
-                saveGalleryBtn.className = "action-icon-button";
-                saveGalleryBtn.title = "Save to Gallery";
-                saveGalleryBtn.setAttribute('aria-label', 'Save to Gallery');
-                saveGalleryBtn.style.position = 'absolute';
-                saveGalleryBtn.style.top = '40px';
-                saveGalleryBtn.style.right = '6px';
-                saveGalleryBtn.style.minWidth = '28px';
-                saveGalleryBtn.style.minHeight = '28px';
-                saveGalleryBtn.style.zIndex = '3';
-                saveGalleryBtn.innerHTML = '<i class="ri-image-add-line"></i>';
-
-                saveGalleryBtn.addEventListener('click', async (e) => {
-                    e.stopPropagation();
-
-                    const extension = blob.type === 'image/jpeg'
-                        ? 'jpg'
-                        : (blob.type.split('/')[1] || 'png');
-                    const timeSuffix = (timestamp !== undefined && timestamp >= 0)
-                        ? `_${formatTime(timestamp).replace(':','-')}`
-                        : `_${currentIndex + 1}`;
-                    const filename = `screenshot${timeSuffix}.${extension}`;
-
-                    try {
-                        const file = new File([blob], filename, {
-                            type: blob.type || 'image/png'
-                        });
-
-                        // Android Chrome: open the native Android share/save sheet.
-                        if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
-                            await navigator.share({
-                                title: 'Save Screenshot',
-                                files: [file]
-                            });
-                            return;
-                        }
-
-                        // Browser fallback: open the actual image so the user can
-                        // long-press it and choose Download/Save image.
-                        const imageUrl = URL.createObjectURL(blob);
-                        const newWindow = window.open(imageUrl, '_blank');
-
-                        if (!newWindow) {
-                            alert('Please allow pop-ups, then tap Save to Gallery again.');
-                        }
-
-                        setTimeout(() => URL.revokeObjectURL(imageUrl), 60000);
-                    } catch (error) {
-                        if (error && error.name === 'AbortError') return;
-                        console.error('Save to Gallery error:', error);
-                        alert('Could not open the Android save option. Please try Chrome on Android.');
-                    }
-                });
-
-                container.appendChild(saveGalleryBtn);
-            }
-
-
             if (timestamp >= 0) {
                 const overlay = document.createElement('div');
                 overlay.className = "screenshot-overlay";
                 overlay.textContent = formatTime(timestamp);
                 container.appendChild(overlay);
             }
+            
+
+            // =============================
+// SAVE TO GALLERY - ANDROID
+// =============================
+const galleryBtn = document.createElement('button');
+
+galleryBtn.className = "action-icon-button";
+galleryBtn.title = "Save to Gallery";
+galleryBtn.style.position = 'absolute';
+galleryBtn.style.top = '40px';
+galleryBtn.style.right = '6px';
+galleryBtn.style.minWidth = '28px';
+galleryBtn.style.minHeight = '28px';
+galleryBtn.style.zIndex = '3';
+
+galleryBtn.innerHTML = '<i class="ri-image-add-line"></i>';
+
+galleryBtn.addEventListener('click', async (e) => {
+    e.stopPropagation();
+
+    try {
+        const extension =
+            blob.type === 'image/jpeg'
+                ? 'jpg'
+                : (blob.type.split('/')[1] || 'png');
+
+        const timeSuffix =
+            (timestamp !== undefined && timestamp >= 0)
+                ? `_${formatTime(timestamp).replace(':','-')}`
+                : `_${currentIndex + 1}`;
+
+        const filename = `screenshot${timeSuffix}.${extension}`;
+
+        // Create an actual image file
+        const file = new File(
+            [blob],
+            filename,
+            {
+                type: blob.type || 'image/png'
+            }
+        );
+
+        // Android / Chrome / supported browsers
+        if (
+            navigator.share &&
+            navigator.canShare &&
+            navigator.canShare({ files: [file] })
+        ) {
+            await navigator.share({
+                title: 'Save Screenshot',
+                text: 'Save this screenshot to Gallery',
+                files: [file]
+            });
+
+            return;
+        }
+
+        // Fallback
+        const url = URL.createObjectURL(blob);
+
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = filename;
+
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+        setTimeout(() => {
+            URL.revokeObjectURL(url);
+        }, 5000);
+
+    } catch (error) {
+
+        if (error.name === 'AbortError') {
+            return;
+        }
+
+        console.error('Save to Gallery error:', error);
+
+        alert(
+            'Gallery save is not supported by this browser. ' +
+            'Please use Chrome on Android.'
+        );
+    }
+});
+
+container.appendChild(galleryBtn);
+
 
             const delBtn = document.createElement('button');
             delBtn.className = "action-icon-button action-icon-button--delete lightbox-delete-btn";
@@ -4008,6 +4075,46 @@
                  document.body.removeChild(tempLink);
                  URL.revokeObjectURL(url);
              }).catch(err => { console.error("Error generating ZIP:", err); alert("Error creating ZIP file: " + err.message); });
+         };
+
+         // --- Save to Gallery (new feature, additive — does not replace the ZIP download above) ---
+         // Direct save: no Web Share API, no "share to app" picker — this downloads each image
+         // straight to the device the same way the per-thumbnail Download button does, just
+         // looped without zipping. Most phones' Gallery/Photos apps pick up images saved this way
+         // automatically. (Note: browsers cannot silently write into the OS photo library without
+         // any user-visible step at all — that would require a native app wrapper. This is the
+         // closest equivalent: a plain, direct download with no app-picker dialog in between.)
+         const shareFilesToGallery = async (files, baseFilename = "screenshots") => {
+             if (!files || files.length === 0) { alert("No screenshots to save."); return; }
+
+             for (let i = 0; i < files.length; i++) {
+                 const file = files[i];
+                 const url = URL.createObjectURL(file);
+                 const tempLink = document.createElement('a');
+                 tempLink.href = url;
+                 tempLink.download = file.name;
+                 document.body.appendChild(tempLink);
+                 tempLink.click();
+                 document.body.removeChild(tempLink);
+                 // Stagger slightly so the browser doesn't block rapid multi-file downloads as a batch
+                 if (i < files.length - 1) await new Promise(resolve => setTimeout(resolve, 350));
+                 URL.revokeObjectURL(url);
+             }
+         };
+
+         const saveBlobsToGallery = (blobDataArray, baseFilename = "screenshots") => {
+             const items = (blobDataArray || []).filter(item => item?.blob);
+             if (items.length === 0) { alert("No screenshots to save."); return; }
+
+             let files;
+             try {
+                 files = items.map((item, index) => new File([item.blob], generateFilename(item, index), { type: item.blob.type || 'image/png' }));
+             } catch (err) {
+                 console.error("Error preparing files for gallery save:", err);
+                 alert("Could not prepare screenshots for saving: " + err.message);
+                 return;
+             }
+             shareFilesToGallery(files, baseFilename);
          };
 
         const handleFileLoad = (file) => {
@@ -6340,6 +6447,31 @@
             }
         });
 
+        // Save to Gallery buttons (new feature, additive alongside the ZIP download buttons above)
+        const galleryAllButton = $('galleryAllButton');
+        const galleryAllAutomaticButton = $('galleryAllAutomaticButton');
+        const galleryManualButton = $('galleryManualButton');
+        const galleryContactSheetButton = $('galleryContactSheetButton');
+
+        if(galleryAllButton) galleryAllButton.addEventListener('click', () => {
+            if (!processingActive) {
+                const allBlobs = [...screenshotBlobs, ...manualScreenshotBlobs].filter(item => item?.blob);
+                saveBlobsToGallery(allBlobs, "interval_screenshots");
+            }
+        });
+        if(galleryAllAutomaticButton) galleryAllAutomaticButton.addEventListener('click', () => {
+            if (!processingActive) {
+                const allBlobs = [...screenshotBlobs, ...manualScreenshotBlobs].filter(item => item?.blob);
+                saveBlobsToGallery(allBlobs, "automatic_frames");
+            }
+        });
+        if(galleryManualButton) galleryManualButton.addEventListener('click', () => {
+            if (!processingActive) {
+                const allBlobs = [...screenshotBlobs, ...manualScreenshotBlobs].filter(item => item?.blob);
+                saveBlobsToGallery(allBlobs, "manual_screenshots");
+            }
+        });
+
         // Frame selection
         ['cancelSelectionIntervalBtn', 'cancelSelectionAutomaticBtn', 'cancelSelectionManualBtn'].forEach(id => {
             const btn = $(id);
@@ -6375,6 +6507,18 @@
             if (btn) btn.addEventListener('click', handleDownloadSelected);
         });
 
+        const handleGallerySelected = () => {
+            if (!selectionModeActive || selectedFrames.size === 0) return;
+            const blobs = [...selectedFrames].filter(item => item?.blob);
+            const prefix = currentMode === 'automatic' ? 'automatic' : (currentMode === 'manual' ? 'manual' : 'interval');
+            saveBlobsToGallery(blobs, `${prefix}_selected`);
+            exitSelectionMode();
+        };
+        ['gallerySelectedIntervalBtn', 'gallerySelectedAutomaticBtn', 'gallerySelectedManualBtn'].forEach(id => {
+            const btn = $(id);
+            if (btn) btn.addEventListener('click', handleGallerySelected);
+        });
+
         if(previewContactSheetButton) previewContactSheetButton.addEventListener('click', () => {
              if (!processingActive && contactSheetBlob) {
                  const url = URL.createObjectURL(contactSheetBlob); window.open(url, '_blank');
@@ -6386,6 +6530,13 @@
                  const tempLink = document.createElement('a'); tempLink.href = url;
                  tempLink.download = `grid_${uploadedFile?.name.split('.')[0] || 'video'}.jpg`;
                  document.body.appendChild(tempLink); tempLink.click(); document.body.removeChild(tempLink); URL.revokeObjectURL(url);
+             } else { alert("Please generate or update the grid first."); }
+         });
+        if(galleryContactSheetButton) galleryContactSheetButton.addEventListener('click', () => {
+             if (!processingActive && contactSheetBlob) {
+                 const baseFilename = `grid_${uploadedFile?.name.split('.')[0] || 'video'}`;
+                 const file = new File([contactSheetBlob], `${baseFilename}.jpg`, { type: contactSheetBlob.type || 'image/jpeg' });
+                 shareFilesToGallery([file], baseFilename);
              } else { alert("Please generate or update the grid first."); }
          });
 
