@@ -3411,7 +3411,7 @@
         const setProcessingUI = (mode) => {
             processingActive = true; cancelExtractionRequested = false;
             if (selectionModeActive) exitSelectionMode();
-            [processButton, processAutomaticButton, processContactSheetButton, downloadAllButton, downloadAllAutomaticButton, downloadManualButton, downloadContactSheetButton, previewContactSheetButton, addManualButton, extractManualButton, clearScreenshotsButton, namingSettingsButton, namingSettingsButtonAutomatic, namingSettingsButtonManual, $('galleryAllButton'), $('galleryAllAutomaticButton'), $('galleryManualButton'), $('galleryContactSheetButton')].forEach(btn => {
+            [processButton, processAutomaticButton, processContactSheetButton, downloadAllButton, downloadAllAutomaticButton, downloadManualButton, downloadContactSheetButton, previewContactSheetButton, addManualButton, extractManualButton, clearScreenshotsButton, namingSettingsButton, namingSettingsButtonAutomatic, namingSettingsButtonManual].forEach(btn => {
                 if (btn) btn.disabled = true;
             });
 
@@ -3489,9 +3489,9 @@
 
         // Frame selection
         const selectionButtonSets = () => [
-            { normal: [downloadAllButton, namingSettingsButton, $('galleryAllButton')], sel: [$('cancelSelectionIntervalBtn'), $('downloadSelectedIntervalBtn'), $('gallerySelectedIntervalBtn')] },
-            { normal: [downloadAllAutomaticButton, namingSettingsButtonAutomatic, $('galleryAllAutomaticButton')], sel: [$('cancelSelectionAutomaticBtn'), $('downloadSelectedAutomaticBtn'), $('gallerySelectedAutomaticBtn')] },
-            { normal: [extractManualButton, downloadManualButton, namingSettingsButtonManual, $('galleryManualButton')], sel: [$('cancelSelectionManualBtn'), $('downloadSelectedManualBtn'), $('gallerySelectedManualBtn')] },
+            { normal: [downloadAllButton, namingSettingsButton], sel: [$('cancelSelectionIntervalBtn'), $('downloadSelectedIntervalBtn')] },
+            { normal: [downloadAllAutomaticButton, namingSettingsButtonAutomatic], sel: [$('cancelSelectionAutomaticBtn'), $('downloadSelectedAutomaticBtn')] },
+            { normal: [extractManualButton, downloadManualButton, namingSettingsButtonManual], sel: [$('cancelSelectionManualBtn'), $('downloadSelectedManualBtn')] },
         ];
 
         const updateSelectionButtons = () => {
@@ -6539,6 +6539,48 @@ container.appendChild(galleryBtn);
                  shareFilesToGallery([file], baseFilename);
              } else { alert("Please generate or update the grid first."); }
          });
+
+        // --- Independent enabled/visible-state sync for the Save to Gallery buttons ---
+        // This block only OBSERVES the existing Download buttons (via MutationObserver) and
+        // mirrors their disabled/hidden state onto the new gallery buttons. It does not call,
+        // wrap, or modify any existing function, array, or line above — it is fully self-contained.
+        (function setupGalleryButtonSync() {
+            const syncPairs = [
+                { source: $('downloadAllButton'), target: $('galleryAllButton') },
+                { source: $('downloadAllAutomaticButton'), target: $('galleryAllAutomaticButton') },
+                { source: $('downloadManualButton'), target: $('galleryManualButton') },
+                { source: $('downloadContactSheetButton'), target: $('galleryContactSheetButton') },
+            ];
+            const syncBasic = (source, target) => {
+                if (!source || !target) return;
+                target.disabled = source.disabled;
+                target.style.display = source.style.display;
+            };
+            syncPairs.forEach(({ source, target }) => {
+                if (!source || !target) return;
+                syncBasic(source, target);
+                new MutationObserver(() => syncBasic(source, target))
+                    .observe(source, { attributes: true, attributeFilter: ['disabled', 'style'] });
+            });
+
+            const selectedPairs = [
+                { source: $('downloadSelectedIntervalBtn'), target: $('gallerySelectedIntervalBtn') },
+                { source: $('downloadSelectedAutomaticBtn'), target: $('gallerySelectedAutomaticBtn') },
+                { source: $('downloadSelectedManualBtn'), target: $('gallerySelectedManualBtn') },
+            ];
+            const syncSelected = (source, target) => {
+                if (!source || !target) return;
+                target.style.display = source.style.display;
+                const match = source.textContent.match(/\((\d+)\)/);
+                target.innerHTML = `Save Selected to Gallery (${match ? match[1] : '0'}) <i class="ri-image-add-line"></i>`;
+            };
+            selectedPairs.forEach(({ source, target }) => {
+                if (!source || !target) return;
+                syncSelected(source, target);
+                new MutationObserver(() => syncSelected(source, target))
+                    .observe(source, { attributes: true, attributeFilter: ['style'], childList: true, subtree: true, characterData: true });
+            });
+        })();
 
         if (clearScreenshotsButton) clearScreenshotsButton.addEventListener('click', () => {
              if (processingActive) return;
