@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -3673,6 +3673,96 @@
                 overlay.textContent = formatTime(timestamp);
                 container.appendChild(overlay);
             }
+            
+
+            // =============================
+// SAVE TO GALLERY - ANDROID
+// =============================
+const galleryBtn = document.createElement('button');
+
+galleryBtn.className = "action-icon-button";
+galleryBtn.title = "Save to Gallery";
+galleryBtn.style.position = 'absolute';
+galleryBtn.style.top = '40px';
+galleryBtn.style.right = '6px';
+galleryBtn.style.minWidth = '28px';
+galleryBtn.style.minHeight = '28px';
+galleryBtn.style.zIndex = '3';
+
+galleryBtn.innerHTML = '<i class="ri-image-add-line"></i>';
+
+galleryBtn.addEventListener('click', async (e) => {
+    e.stopPropagation();
+
+    try {
+        const extension =
+            blob.type === 'image/jpeg'
+                ? 'jpg'
+                : (blob.type.split('/')[1] || 'png');
+
+        const timeSuffix =
+            (timestamp !== undefined && timestamp >= 0)
+                ? `_${formatTime(timestamp).replace(':','-')}`
+                : `_${currentIndex + 1}`;
+
+        const filename = `screenshot${timeSuffix}.${extension}`;
+
+        // Create an actual image file
+        const file = new File(
+            [blob],
+            filename,
+            {
+                type: blob.type || 'image/png'
+            }
+        );
+
+        // Android / Chrome / supported browsers
+        if (
+            navigator.share &&
+            navigator.canShare &&
+            navigator.canShare({ files: [file] })
+        ) {
+            await navigator.share({
+                title: 'Save Screenshot',
+                text: 'Save this screenshot to Gallery',
+                files: [file]
+            });
+
+            return;
+        }
+
+        // Fallback
+        const url = URL.createObjectURL(blob);
+
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = filename;
+
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+        setTimeout(() => {
+            URL.revokeObjectURL(url);
+        }, 5000);
+
+    } catch (error) {
+
+        if (error.name === 'AbortError') {
+            return;
+        }
+
+        console.error('Save to Gallery error:', error);
+
+        alert(
+            'Gallery save is not supported by this browser. ' +
+            'Please use Chrome on Android.'
+        );
+    }
+});
+
+container.appendChild(galleryBtn);
+
 
             const delBtn = document.createElement('button');
             delBtn.className = "action-icon-button action-icon-button--delete lightbox-delete-btn";
