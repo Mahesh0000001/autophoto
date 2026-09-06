@@ -3,15 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>Pilko Studio - Local Video Screenshot Extraction</title>
+      <title>AutoPhoto - Video Screenshot Extraction</title>
     <meta name="description" content="Extract screenshots from video locally in browser. Supports interval, manual and automatic frame capture with timestamps.">
     <meta name="keywords" content="video screenshot, frame extraction, automated screenshot, timestamp overlay, scene detection">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cairo+Play:wght@400&family=Inter:wght@400;500;600&family=Source+Code+Pro:wght@400&display=swap" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
-  <link rel="icon" type="image/x-icon" href="favicon.ico">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Pilko Studio","applicationCategory":"MultimediaApplication","operatingSystem":"Web","url":"https://pilko.studio/","description":"Extract screenshots from video locally in your browser. Supports interval, manual and automatic scene-change for frame capture.","browserRequirements":"Requires JavaScript. Works in all modern browsers.","featureList":"Video screenshot extraction, interval capture, scene detection, overlay timestamps, black bar removal, contact sheet generation","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"publisher":{"@type":"Organization","name":"Pilko Studio","url":"https://pilko.studio/","description":"Professional video editing tools and utilities","sameAs":["https://github.com/pilkostudio"]}}</script>
+  <link rel="icon" type="image/x-icon" href="">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Auto Photo","applicationCategory":"MultimediaApplication","operatingSystem":"Web","url":"https://pilko.studio/","description":"Extract screenshots from video locally in your browser. Supports interval, manual and automatic scene-change for frame capture.","browserRequirements":"Requires JavaScript. Works in all modern browsers.","featureList":"Video screenshot extraction, interval capture, scene detection, overlay timestamps, black bar removal, contact sheet generation","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"publisher":{"@type":"Organization","name":"Pilko Studio","url":"https://pilko.studio/","description":"Professional video editing tools and utilities","sameAs":["https://github.com/pilkostudio"]}}</script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
   <style>
     :root {
@@ -1610,7 +1610,7 @@
 
     <div class="side-panel" role="complementary" aria-label="Settings and Controls">
       <div class="content-wrapper">
-            <h1 id="pageTitle" data-text="Pilko Studio">Pilko Studio</h1>
+            <h1 id="pageTitle" data-text="Auto Photo">Auto Photo</h1>
         <div id="dropZone" role="button" tabindex="0" aria-label="Upload video file" aria-describedby="dropZoneText">
             <div id="uploadIcon">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" id="uploadIconSvg"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.5"><path stroke-miterlimit="10" d="M9.047 9.5v5"/><path stroke-linejoin="round" d="M11.34 11.605L9.373 9.638a.458.458 0 0 0-.651 0l-1.968 1.967"/><path stroke-linejoin="round" d="M12 5.32H6.095A3.595 3.595 0 0 0 2.5 8.923v6.162a3.595 3.595 0 0 0 3.595 3.595H12a3.595 3.595 0 0 0 3.595-3.595V8.924A3.594 3.594 0 0 0 12 5.32m9.5 4.118v5.135c0 .25-.071.496-.205.708a1.355 1.355 0 0 1-.555.493a1.27 1.27 0 0 1-.73.124a1.366 1.366 0 0 1-.677-.278l-3.225-2.588a1.377 1.377 0 0 1-.503-1.047c0-.2.045-.396.133-.575c.092-.168.218-.315.37-.432l3.225-2.567a1.36 1.36 0 0 1 .678-.278c.25-.032.504.011.729.124a1.325 1.325 0 0 1 .76 1.181"/></g></svg>
@@ -2161,7 +2161,7 @@
   <div class="modal-overlay" id="toolInfoModal" role="dialog" aria-labelledby="toolInfoTitle">
     <div class="info-box-content">
       <button class="modal-close" id="modalClose" aria-label="Close"><i class="ri-close-line"></i></button>
-      <h2 class="modal-title" id="toolInfoTitle">Pilko Studio</h2>
+      <h2 class="modal-title" id="toolInfoTitle">Auto Photo</h2>
       <div class="modal-body">
         <p>Pilko Studio is a frame capture web tool that lets you extract screenshots from your videos in many different ways, manual or automate, locally within your browser.</p>
 
@@ -2623,8 +2623,8 @@
     }
 
     // Save My Settings (localStorage)
-    const REMEMBER_SETTINGS_ENABLED_KEY = 'pilkoStudio.rememberSettings.enabled';
-    const REMEMBERED_SETTINGS_KEY = 'pilkoStudio.rememberSettings.v1';
+    const REMEMBER_SETTINGS_ENABLED_KEY = 'AutoPhoto.rememberSettings.enabled';
+    const REMEMBERED_SETTINGS_KEY = 'AutoPhoto.rememberSettings.v1';
     let restoringRememberedSettings = false;
     const REMEMBER_TC = ['off','start/end','hh:mm:ss:ff','hh:mm:ss','mm:ss:ff','mm:ss','ss:ff','ss','ff'];
     const REMEMBER_SIZE = ['S','M','L','XL'];
